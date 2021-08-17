@@ -1,0 +1,605 @@
+swagger: "2.0"
+info:
+  description: "This is a documentation for Gawq Business API. You can find out more at [https://docs.gawq.com](https://docs.gawq.com). The API contains REST endpoints to retrieve news articles from popular news sources. To access the API you must obtain an API key from the [https://gawq.com/business](https://gawq.com/business) website."
+  version: "1.0.0"
+  title: "Gawq Business API"
+  termsOfService: "http://gawq.com/business/terms-of-service/"
+  contact:
+    email: "support@gawq.com"
+host: "api.gawq.com"
+basePath: "/v1"
+tags:
+  - name: "All"
+    description: "Find most relevant news by searching full news index"
+    externalDocs:
+      description: "Find out more at"
+      url: "https://docs.gawq.com"
+  - name: "Headlines"
+    description: "Find most relevant headlines by topics, categories, and other parameters"
+schemes:
+  - "https"
+paths:
+  /all:
+    get:
+      tags:
+        - "All"
+      summary: "Retrieve news articles"
+      description: "Find most relevant news by searching full news index"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: q
+          type: string
+          description: "Search query, each article will be scored and ranked against it. Articles are searched on title, description and content fields."
+        - in: query
+          name: from
+          type: string
+          description: "'from' filter, will search articles published after specified date, date could be passed as ISO or 'yyyy-mm-dd'."
+        - in: query
+          name: to
+          type: string
+          description: "'to' filter, will search articles published before specified date, date could be passed as ISO or 'yyyy-mm-dd'."
+        - in: query
+          name: addDateFrom
+          type: string
+          description: "'addDateFrom' filter, will search articles added after specified date, date could be passed as ISO or 'yyyy-mm-dd'."
+        - in: query
+          name: addDateTo
+          type: string
+          description: "'addDateTo' filter, will search articles added before specified date, date could be passed as ISO or 'yyyy-mm-dd'."
+        - in: query
+          name: articleId
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Article ID, will search for news article by ID of the article. If several parameters are passed, all matched articles will be returned."
+        - in: query
+          name: clusterId
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Cluster ID, will search for news articles by ID of the cluster. If several parameters are passed, all matched articles will be returned."
+        - in: query
+          name: medium
+          type: string
+          description: "Medium, will filter out news articles medium, which could be 'video' or 'article'. If several parameters are passed, all matched articles will be returned."
+        - in: query
+          name: source
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Publisher's domain, can include subdomain. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: country
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Country code to filter by country. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: language
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Language code to filter by language. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: label
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Labels to filter by, could be 'opinion', 'paid-news', 'non-news', etc. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: topic
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter by topics. Each topic is some kind of an entity that the article is about. Example of topics: Google, Facebook, Joe Biden, etc. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: category
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter by categories. Categories are general themes that the article is about. Example of topics: tech, politics, academia, etc. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: taxonomy
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "TODO: refine this param. Filter by taxonomy codes. Taxonomy codes are codes for specific industry. Based on content, each article could be tagged with different taxonomy codes, which say that the article is relevant to certain industry. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: sortBy
+          type: string
+          default: "relevance"
+          description: "Sort by parameter, can be by 'relevance' to search query or by 'date' of publication."
+        - in: query
+          name: page
+          type: integer
+          default: 0
+          description: "Zero-based page number. Up to 10000."
+        - in: query
+          name: size
+          type: integer
+          default: 10
+          description: "Page size, can be from 1 to 100."
+        - in: query
+          name: showReprints
+          type: boolean
+          default: true
+          description: "Whether to return reprints in the response or not"
+      responses:
+        200:
+          description: "Successfully retrieved news articles"
+          schema:
+            $ref: "#/definitions/QuerySearchResult"
+        400:
+          description: "Invalid request, check whether passed paramaters are correct"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "API key was not found or is invalid"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        403:
+          description: "API key is disabled"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        429:
+          description: "Too many requests hit api too quickly, or you have reached your monthly quota"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+        - APIKeyHeader: []
+        - APIKeyQueryParam: []
+        - APIKeyAuthorization: []
+  /headlines:
+    get:
+      tags:
+        - "Headlines"
+      summary: "Retrieves most relevant clusters of news articles"
+      description: "Retrieves most recent news clusters"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: q
+          type: string
+          description: "Search query, each article will be scored and ranked against it. Articles are searched on title, description and content fields."
+        - in: query
+          name: from
+          type: string
+          description: "'from' filter, will search articles published after specified date, date could be passed as ISO or 'yyyy-mm-dd'."
+        - in: query
+          name: to
+          type: string
+          description: "'to' filter, will search articles published before specified date, date could be passed as ISO or 'yyyy-mm-dd'."
+        - in: query
+          name: addDateFrom
+          type: string
+          description: "'addDateFrom' filter, will search articles added after specified date, date could be passed as ISO or 'yyyy-mm-dd'."
+        - in: query
+          name: addDateTo
+          type: string
+          description: "'addDateTo' filter, will search articles added before specified date, date could be passed as ISO or 'yyyy-mm-dd'."
+        - in: query
+          name: medium
+          type: string
+          description: "Medium, will filter out news articles medium, which could be 'video' or 'article'. If several parameters are passed, all matched articles will be returned."
+        - in: query
+          name: source
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Publisher's domain, can include subdomain. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: country
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Country code to filter by country. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: language
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Language code to filter by language. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: label
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Labels to filter by, could be 'opinion', 'paid-news', 'non-news', etc. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: topic
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter by topics. Each topic is some kind of an entity that the article is about. Example of topics: Google, Facebook, Joe Biden, etc. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: category
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter by categories. Categories are general themes that the article is about. Example of topics: tech, politics, academia, etc. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: taxonomy
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "TODO: refine this param. Filter by taxonomy codes. Taxonomy codes are codes for specific industry. Based on content, each article could be tagged with different taxonomy codes, which say that the article is relevant to certain industry. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: sortBy
+          type: string
+          default: "relevance"
+          description: "Sort by parameter, can be by 'relevance' to search query or by 'date' of publication."
+        - in: query
+          name: sortClusterBy
+          type: string
+          default: "relevance"
+          description: "Sort articles in cluster by parameters, can be by 'relevance' to search query or by 'date' of publication."
+        - in: query
+          name: maxClusters
+          type: integer
+          default: 10
+          description: "Maximum number of clusters to return."
+        - in: query
+          name: maxSize
+          type: integer
+          default: 5
+          description: "Maximum number of articles per cluster to return."
+        - in: query
+          name: showReprints
+          type: boolean
+          default: true
+          description: "Whether to return reprints in the response or not"
+      responses:
+        200:
+          description: "Successfully retritrieved news articles"
+          schema:
+            $ref: "#/definitions/AggregationSearchResult"
+        400:
+          description: "Invalid request, check whether passed paramaters are correct"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "API key was not found or is invalid"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        403:
+          description: "API key is disabled"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        429:
+          description: "Too many requests hit api too quickly, or you have reached your monthly quota"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      security:
+        - APIKeyHeader: []
+        - APIKeyQueryParam: []
+        - APIKeyAuthorization: []
+
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: x-api-key
+  APIKeyQueryParam:
+    type: apiKey
+    in: query
+    name: apiKey
+  APIKeyAuthorization:
+    type: apiKey
+    in: header
+    name: Authorization
+definitions:
+  ErrorResponse:
+    type: object
+    description: "Message object with error response"
+    properties:
+      status:
+        type: integer
+        format: int32
+        description: "HTTP status of the response"
+      message:
+        type: string
+        description: "Error message"
+      timestamp:
+        type: integer
+        format: int64
+        description: "Timestamp of when the request was made in milliseconds"
+  Article:
+    type: object
+    description: "Information about article"
+    properties:
+      url:
+        type: string
+        description: "Url of the article"
+      authorsByline:
+        type: string
+        description: "Author byline extracted from the article"
+      articleId:
+        type: string
+        description: "Article ID"
+      clusterId:
+        type: string
+        description: "Cluster ID"
+      source:
+        type: string
+        description: "Domain that the article was published on"
+      imageUrl:
+        type: string
+        description: "Url of the image associated with the article"
+      country:
+        type: string
+        description: "Country where the publisher is located, represented as country code"
+      language:
+        type: string
+        description: "Article's language, represented as language code"
+      pubDate:
+        type: string
+        description: "Article's publication date"
+      addDate:
+        type: string
+        description: "Date when article was added to the database"
+      title:
+        type: string
+        description: "Article's title"
+      description:
+        type: string
+        description: "Description of the article"
+      content:
+        type: string
+        description: "Content of the article"
+      medium:
+        type: string
+        description: "Medium of the article"
+      labels:
+        type: array
+        description: "List of labels associated with the article"
+        items:
+          $ref: "#/definitions/LabelHolder"
+      matchedAuthors:
+        type: array
+        description: "Matched authors"
+        items:
+          $ref: "#/definitions/JournalistHolder"
+      claim:
+        type: string
+        description: "Fact-check claim"
+      verdict:
+        type: string
+        description: "Fact-check verdict"
+      keywords:
+        type: array
+        description: "List of keywords associated with the article"
+        items:
+          $ref: "#/definitions/KeywordHolder"
+      topics:
+        type: array
+        description: "List of topics associated with the article"
+        items:
+          $ref: "#/definitions/TopicHolder"
+      categories:
+        type: array
+        description: "List of categories associated with the article"
+        items:
+          $ref: "#/definitions/CategoryHolder"
+      taxonomies:
+        type: array
+        description: "List of taxonomies associated with the article"
+        items:
+          $ref: "#/definitions/TaxonomyHolder"
+      entities:
+        type: array
+        description: "List of entities associated with the article"
+        items:
+          $ref: "#/definitions/EntityHolder"
+      sentiment:
+        type: object
+        description: "Sentiment holder object"
+        properties:
+          positive:
+            type: number
+            description: "Positive sentiment rank"
+          neutral:
+            type: number
+            description: "Neutral sentiment rank"
+          negative:
+            type: number
+            description: "Negative sentiment rank"
+      summary:
+        type: string
+        description: "Article claim"
+      translation:
+        type: string
+        description: "Article translation into english (for non-english articles)"
+      locations:
+        type: array
+        description: "List of locations associated with the article"
+        items:
+          $ref: "#/definitions/LocationHolder"
+      reprint:
+        type: boolean
+        description: "Tells whether the article is a reprint or not"
+
+  Cluster:
+    type: object
+    description: "Cluster of articles"
+    properties:
+      clusterId:
+        type: string
+        description: "Cluster ID"
+      count:
+        type: integer
+        format: int64
+        description: "Total number of articles in the cluster"
+      articles:
+        type: array
+        description: "List of articles in the cluster"
+        items:
+          $ref: "#/definitions/Article"
+
+  AggregationSearchResult:
+    type: object
+    description: "Successful API response that contains clusters, number of articles, number of clusters and clusters"
+    properties:
+      status:
+        type: integer
+        format: int32
+        description: "HTTP status of the response"
+      numArticles:
+        type: integer
+        format: int64
+        description: "Number of articles that matched the query"
+      numClusters:
+        type: integer
+        format: int64
+        description: "Number of clusters that were returned in response"
+      clusters:
+        type: array
+        description: "List of clusters that were returned"
+        items:
+          $ref: "#/definitions/Cluster"
+
+  QuerySearchResult:
+    type: object
+    description: "Successful API response that contains status, number of results and articles"
+    properties:
+      status:
+        type: integer
+        format: int32
+        description: "HTTP status of the response"
+      numResults:
+        type: integer
+        format: int32
+        description: "Number of the results"
+      hits:
+        type: array
+        description: "List of articles, that were retrieved"
+        items:
+          $ref: "#/definitions/Article"
+
+  TopicHolder:
+    type: object
+    description: "Topic holder object"
+    properties:
+      name:
+        type: string
+        description: "Name of the topic"
+
+  TaxonomyHolder:
+    type: object
+    description: "Taxonomy holder object"
+    properties:
+      name:
+        type: string
+        description: "Taxonomy code"
+
+  SourceHolder:
+    type: object
+    description: "Source domain holder object"
+    properties:
+      domain:
+        type: string
+        description: "Domain string"
+
+  SentimentHolder:
+    type: object
+    description: "Sentiment holder object"
+    properties:
+      positive:
+        type: number
+        description: "Positive sentiment rank"
+      neutral:
+        type: number
+        description: "Neutral sentiment rank"
+      negative:
+        type: number
+        description: "Negative sentiment rank"
+
+  LocationHolder:
+    type: object
+    description: "Location holder object"
+    properties:
+      state:
+        type: string
+        description: "State"
+      city:
+        type: number
+        description: "city"
+      area:
+        type: number
+        description: "Area"
+
+  LabelHolder:
+    type: object
+    description: "Label holder object"
+    properties:
+      name:
+        type: string
+        description: "Label name"
+
+  KeywordHolder:
+    type: object
+    description: "Keyword holder object"
+    properties:
+      name:
+        type: string
+        description: "Keyword name"
+      weight:
+        type: number
+        description: "Relative weight of the keyword in text"
+
+  JournalistHolder:
+    type: object
+    description: "Journalist holder object"
+    properties:
+      id:
+        type: string
+        description: "Journalist id"
+      name:
+        type: string
+        description: "Journalist name"
+
+  EntityHolder:
+    type: object
+    description: "Entity holder object, entities are Named Entities recognized in text"
+    properties:
+      data:
+        type: string
+        description: "Entity text data"
+      type:
+        type: string
+        description: "Type of the entity"
+      mentions:
+        type: integer
+        format: int32
+        description: "Number of mentions"
+
+  CategoryHolder:
+    type: object
+    description: "Category holder object"
+    properties:
+      name:
+        type: string
+        description: "Category name"
+
+
+externalDocs:
+  description: "Find out more about Gawq Business API"
+  url: "https://docs.gawq.com"
