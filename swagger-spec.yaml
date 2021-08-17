@@ -116,6 +116,27 @@ paths:
             type: string
           description: "TODO: refine this param. Filter by taxonomy codes. Taxonomy codes are codes for specific industry. Based on content, each article could be tagged with different taxonomy codes, which say that the article is relevant to certain industry. If multiple parameters are passed they will be applied as OR operation."
         - in: query
+          name: state
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter local news by state. Applies only to local news, when this param is passed non-local news will not be returned. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: city
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter local news by city. Applies only to local news, when this param is passed non-local news will not be returned. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: area
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter local news by area. Applies only to local news, when this param is passed non-local news will not be returned. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
           name: sortBy
           type: string
           default: "relevance"
