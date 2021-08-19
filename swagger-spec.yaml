@@ -257,6 +257,27 @@ paths:
             type: string
           description: "Filter by categories. Categories are general themes that the article is about. Example of topics: tech, politics, academia, etc. If multiple parameters are passed they will be applied as OR operation."
         - in: query
+          name: state
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter local news by state. Applies only to local news, when this param is passed non-local news will not be returned. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: city
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter local news by city. Applies only to local news, when this param is passed non-local news will not be returned. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
+          name: area
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          description: "Filter local news by area. Applies only to local news, when this param is passed non-local news will not be returned. If multiple parameters are passed they will be applied as OR operation."
+        - in: query
           name: taxonomy
           type: array
           collectionFormat: multi
@@ -561,10 +582,10 @@ definitions:
         type: string
         description: "State"
       city:
-        type: number
+        type: string
         description: "city"
       area:
-        type: number
+        type: string
         description: "Area"
 
   LabelHolder:
