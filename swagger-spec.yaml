@@ -1,23 +1,60 @@
 swagger: "2.0"
-info:
-  description: "This is a documentation for Gawq Business API. You can find out more at [https://docs.gawq.com](https://docs.gawq.com). The API contains REST endpoints to retrieve news articles from popular news sources. To access the API you must obtain an API key from the [https://gawq.com/business](https://gawq.com/business) website."
-  version: "1.0.0"
-  title: "Gawq Business API"
-  termsOfService: "http://gawq.com/business/terms-of-service/"
-  contact:
-    email: "support@gawq.com"
-host: "api.gawq.com"
+host: "api.perigon.io"
 basePath: "/v1"
+produces:
+  - "application/json"
+  - "text/plain"
+consumes:
+  - "application/json"
+  - "text/plain"
+info:
+  title: "Perigon Business API"
+  version: "1.0.0"
+  termsOfService: "http://perigon.io/business/terms-of-service/"
+  contact:
+    email: "support@perigon.io"
+  description: |
+    This is a documentation for Perigon Business API. The API contains REST endpoints to retrieve news articles from different news sources.
+
+    You can also retrieve news clusters and additional analysis information about news articles.
+
+    To access the API you must obtain an API key from the [https://perigon.io/business](https://perigon.io/business) website.
+
+    # Errors
+
+    The API uses standard HTTP status codes to indicate the success or failure of the API call. The body of the response will be JSON in the following format:
+
+    ```
+    {
+      "status": 200,
+      "message": "API key not found",
+      "timestamp": 1630153463787
+    }
+    ```
+
+    # Authentication
+
+    In order to access the API you should provide an API key. API key could be provided either as a `apiKey` query parameter, or as one of the headers: `x-api-key`, `Authorization: Bearer yourApiKey`.
+
+    If the API key is not provided, or if it is incorrect, then the API will return an error with corresponding HTTP status, 401 or 403.
+
+    # Rate Limiting
+
+    User requests to the API are being rate-limited, i.e. you can make a certain number of requests in certain timeframe. If you exceed
+    the threshold you will receive an error with HTTP status `429 Too Many Requests`. The rate-limiting threshold is set for each account
+    depending on the usage plan. You can contact support to request an increase in rate-limiting threshold.
+
 tags:
   - name: "All"
+    x-displayName: "All endpoint"
     description: "Find most relevant news by searching full news index"
     externalDocs:
-      description: "Find out more at"
-      url: "https://docs.gawq.com"
+      description: "Find out more at https://docs.perigon.io"
+      url: "https://docs.perigon.io"
   - name: "Headlines"
+    x-displayName: "Headlines endpoint"
     description: "Find most relevant headlines by topics, categories, and other parameters"
-schemes:
-  - "https"
+
 paths:
   /all:
     get:
@@ -169,18 +206,29 @@ paths:
           description: "API key was not found or is invalid"
           schema:
             $ref: "#/definitions/ErrorResponse"
+          examples:
+            application/json:
+              status: 401
+              message: "API key not found"
+              timestamp: 1630153463787
         403:
           description: "API key is disabled"
           schema:
             $ref: "#/definitions/ErrorResponse"
+          examples:
+            application/json:
+              status: 403
+              message: "API key not found"
+              timestamp: 1630153463787
         429:
           description: "Too many requests hit api too quickly, or you have reached your monthly quota"
           schema:
             $ref: "#/definitions/ErrorResponse"
-      security:
-        - APIKeyHeader: []
-        - APIKeyQueryParam: []
-        - APIKeyAuthorization: []
+          examples:
+            application/json:
+              status: 429
+              message: "Too Many requests"
+              timestamp: 1630153463787
   /headlines:
     get:
       tags:
@@ -322,32 +370,30 @@ paths:
           description: "API key was not found or is invalid"
           schema:
             $ref: "#/definitions/ErrorResponse"
+          examples:
+            application/json:
+              status: 401
+              message: "API key not found"
+              timestamp: 1630153463787
         403:
           description: "API key is disabled"
           schema:
             $ref: "#/definitions/ErrorResponse"
+          examples:
+            application/json:
+              status: 403
+              message: "API key is disabled"
+              timestamp: 1630153463787
         429:
           description: "Too many requests hit api too quickly, or you have reached your monthly quota"
           schema:
             $ref: "#/definitions/ErrorResponse"
-      security:
-        - APIKeyHeader: []
-        - APIKeyQueryParam: []
-        - APIKeyAuthorization: []
+          examples:
+            application/json:
+              status: 429
+              message: "Too Many requests"
+              timestamp: 1630153463787
 
-securityDefinitions:
-  APIKeyHeader:
-    type: apiKey
-    in: header
-    name: x-api-key
-  APIKeyQueryParam:
-    type: apiKey
-    in: query
-    name: apiKey
-  APIKeyAuthorization:
-    type: apiKey
-    in: header
-    name: Authorization
 definitions:
   ErrorResponse:
     type: object
@@ -583,7 +629,7 @@ definitions:
         description: "State"
       city:
         type: string
-        description: "city"
+        description: "City"
       area:
         type: string
         description: "Area"
@@ -643,5 +689,5 @@ definitions:
 
 
 externalDocs:
-  description: "Find out more about Gawq Business API"
-  url: "https://docs.gawq.com"
+  description: "Find out more about Perigon Business API"
+  url: "https://docs.perigon.io"
